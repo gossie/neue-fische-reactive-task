@@ -94,10 +94,8 @@ class ReactiveTaskApplicationTests {
 		
 		OrderDTO payedOrder = webTestClient
 				.post()
-				.uri(createdOrder.links().get("self"))
-				.contentType(MediaType.APPLICATION_JSON)
+				.uri(createdOrder.links().get("payment"))
 				.accept(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromValue(new OrderDTO("PIZZA", false, 0.0, Collections.emptyMap())))
 				.exchange()
 				.expectStatus()
 				.isOk()
@@ -107,6 +105,7 @@ class ReactiveTaskApplicationTests {
 		
 		assertThat(payedOrder.item()).isEqualTo("PIZZA");
 		assertThat(payedOrder.payed()).isTrue();
+		assertThat(payedOrder.price()).isEqualTo(9.5);
 	}
 
 }
