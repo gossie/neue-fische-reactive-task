@@ -2,6 +2,7 @@ package de.neuefische.reactivetask;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -18,6 +19,7 @@ class ReactiveTaskApplicationTests {
 	private WebTestClient webTestClient;
 
 	@Test
+	@Disabled
 	void integrationTest() {
 		
 		var createdOrder1 = webTestClient
