@@ -31,18 +31,24 @@ class OrderController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Mono<OrderDTO> createOrder(@RequestBody OrderDTO order) {
 		// TODO: implement me
+		// Verwendet das orderRepository um die übergebene Order in die Datenbank zu schreiben.
+		// Beachtet, dass ihr hier ein OrderDTO und auch wieder zurückgeben müsst, das orderRepository
+		// aber eine Order erwartet und zurückgibt.
 		return Mono.empty();
 	}
 	
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Flux<OrderDTO> getOrders() {
 		// TODO: implement me
+		// Verwendet das OrderRepository um alle Orders aus der Datenbank auszulesen und als OrderDTO
+		// Objekte zurückzugeben.
 	    return Flux.empty();
 	}
 	
 	@PostMapping(path = "/{id}/payment", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Mono<OrderDTO> payment(@PathVariable String id) {
 		// TODO: implement me
+		// Jetzt geht es ans eingemacht. Verwendet den WebClient um den Pfad "/api/payment"
 		return Mono.empty();
 	}
 

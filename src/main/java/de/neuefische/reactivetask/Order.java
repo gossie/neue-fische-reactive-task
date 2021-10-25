@@ -4,10 +4,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-record Order(@Id String id, Item item, boolean payed) {
+record Order(@Id String id, Item item, boolean payed, double price) {
 	
-	Order markAsPayed() {
-		return new Order(id, item, true);
+	Order markAsPayed(double price) {
+		return new Order(id, item, true, price);
 	}
 	
 }
