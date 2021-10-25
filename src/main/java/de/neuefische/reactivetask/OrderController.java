@@ -31,19 +31,33 @@ class OrderController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Mono<OrderDTO> createOrder(@RequestBody OrderDTO order) {
 		// TODO: implement me
-		return Mono.empty();
+		return orderRepository.save(orderMapper.toOrder(order))
+				.map(orderMapper::toOrderDTO);
 	}
 	
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Flux<OrderDTO> getOrders() {
 		// TODO: implement me
-	    return Flux.empty();
+	    return orderRepository.findAll()
+				.map(orderMapper::toOrderDTO);
 	}
 	
 	@PostMapping(path = "/{id}/payment", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Mono<PaymentResponse> payment(@PathVariable String id) {
 		// TODO: implement me
-		return Mono.empty();
+		return orderRepository.findById(id)
+				.map(order -> new PaymentRequest(order.id(), order.item()))
+				.flatMap(this::callPaymentService);
+	}
+	
+	private Mono<PaymentResponse> callPaymentService(PaymentRequest paymentRequest) {
+		return webClient
+				.post()
+				.uri("")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(BodyInserters.fromValue(paymentRequest))
+				.exchangeToMono(clientResponse -> clientResponse.bodyToMono(PaymentResponse.class));
 	}
 
 }
