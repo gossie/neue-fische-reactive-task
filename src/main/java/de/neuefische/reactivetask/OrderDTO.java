@@ -1,5 +1,7 @@
 package de.neuefische.reactivetask;
 
-record OrderDTO(String item) {
+import java.util.Map;
+
+record OrderDTO(String item, boolean payed, Map<String, String> links) {
 
 }

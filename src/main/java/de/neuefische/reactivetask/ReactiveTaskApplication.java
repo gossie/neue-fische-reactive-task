@@ -1,5 +1,6 @@
 package de.neuefische.reactivetask;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,8 @@ public class ReactiveTaskApplication {
 	}
 	
 	@Bean
-	public WebClient webClient() {
-		return WebClient.create("https://herokuapps.com/ldwas-payment-service");
+	public WebClient webClient(@Value("${payment.service.url:http://localhost:5000}") String paymentServiceUrl) {
+		return WebClient.create(paymentServiceUrl);
 	}
 
 }

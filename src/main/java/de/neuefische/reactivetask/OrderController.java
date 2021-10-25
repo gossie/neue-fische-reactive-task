@@ -41,7 +41,7 @@ class OrderController {
 	}
 	
 	@PostMapping(path = "/{id}/payment", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public Mono<PaymentResponse> payment(@PathVariable String id) {
+	public Mono<OrderDTO> payment(@PathVariable String id) {
 		// TODO: implement me
 		return Mono.empty();
 	}

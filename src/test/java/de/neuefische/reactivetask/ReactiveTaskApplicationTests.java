@@ -2,6 +2,9 @@ package de.neuefische.reactivetask;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +21,24 @@ class ReactiveTaskApplicationTests {
 	@Autowired
 	private WebTestClient webTestClient;
 
+	@Autowired
+	private OrderRepository orderRepository;
+	
+	@BeforeEach
+	void setUp() {
+		orderRepository.deleteAll().subscribe();
+	}
+	
 	@Test
 	@Disabled
-	void integrationTest() {
+	void creationTest() {
 		
 		var createdOrder1 = webTestClient
 				.post()
 				.uri("/api/orders")
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromValue(new OrderDTO("PIZZA")))
+				.body(BodyInserters.fromValue(new OrderDTO("PIZZA", false, Collections.emptyMap())))
 				.exchange()
 				.expectStatus()
 				.isCreated()
@@ -40,7 +51,7 @@ class ReactiveTaskApplicationTests {
 				.uri("/api/orders")
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromValue(new OrderDTO("PASTA")))
+				.body(BodyInserters.fromValue(new OrderDTO("PASTA", false, Collections.emptyMap())))
 				.exchange()
 				.expectStatus()
 				.isCreated()
@@ -62,7 +73,40 @@ class ReactiveTaskApplicationTests {
 		assertThat(allOrders).hasSize(2);
 		assertThat(createdOrder1).isEqualTo(allOrders.get(0));
 		assertThat(createdOrder2).isEqualTo(allOrders.get(1));
+	}
+	
+	@Test
+	@Disabled
+	void paymentTest() {
 		
+		var createdOrder = webTestClient
+				.post()
+				.uri("/api/orders")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(BodyInserters.fromValue(new OrderDTO("PIZZA", false, Collections.emptyMap())))
+				.exchange()
+				.expectStatus()
+				.isCreated()
+				.expectBody(OrderDTO.class)
+				.returnResult()
+				.getResponseBody();
+		
+		OrderDTO payedOrder = webTestClient
+				.post()
+				.uri(createdOrder.links().get("self"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(BodyInserters.fromValue(new OrderDTO("PIZZA", false, Collections.emptyMap())))
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(OrderDTO.class)
+				.returnResult()
+				.getResponseBody();
+		
+		assertThat(payedOrder.item()).isEqualTo("PIZZA");
+		assertThat(payedOrder.payed()).isTrue();
 	}
 
 }
