@@ -48,10 +48,11 @@ class OrderController {
 	@PostMapping(path = "/{id}/payment", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Mono<OrderDTO> payment(@PathVariable String id) {
 		// TODO: implement me
-		// Jetzt geht es ans eingemacht. Verwendet den WebClient um den Pfad "/api/payment" mit einem PaymentRequest auf.
+		// Jetzt geht es ans eingemachte. Verwendet den WebClient um den Pfad "/api/payment" mit einem PaymentRequest auf.
 		// Als Ergebnis bekommt ihr ein PaymentResult. Markiert die Order als bezahlt indem ihr die Mehtode
 		// markAsPayed mit dem Preis aus dem PaymentResult aufruft.
 		// Speichert dann die geänderte Order wieder in der Datenbank und gebt das Ergebnis als OrderDTO zurück.
+		// Am WebClient ist die baseUrl schon korrekt konfiguriert.
 		return Mono.empty();
 	}
 

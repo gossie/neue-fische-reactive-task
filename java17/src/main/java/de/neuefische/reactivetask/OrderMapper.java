@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 class OrderMapper {
 
 	OrderDTO toOrderDTO(Order order) {
-		return new OrderDTO(order.item().name(), order.payed(), order.price(), Map.of("payment", "/api/orders/" + order.id() + "/payment"));
+		return new OrderDTO(order.item().name(), order.payed(), order.price(), Map.of("self", "/api/orders/" + order.id(), "payment", "/api/orders/" + order.id() + "/payment"));
 	}
 	
 	Order toOrder(OrderDTO orderDTO) {

@@ -92,7 +92,7 @@ class ReactiveTaskApplicationTests {
 				.returnResult()
 				.getResponseBody();
 		
-		OrderDTO payedOrder = webTestClient
+		var payedOrder = webTestClient
 				.post()
 				.uri(createdOrder.links().get("payment"))
 				.accept(MediaType.APPLICATION_JSON)
@@ -106,6 +106,20 @@ class ReactiveTaskApplicationTests {
 		assertThat(payedOrder.item()).isEqualTo("PIZZA");
 		assertThat(payedOrder.payed()).isTrue();
 		assertThat(payedOrder.price()).isEqualTo(9.5);
+		
+		var allOrders = webTestClient
+				.get()
+				.uri("/api/orders")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBodyList(OrderDTO.class)
+				.returnResult()
+				.getResponseBody();
+
+		assertThat(allOrders).hasSize(1);
+		assertThat(payedOrder).isEqualTo(allOrders.get(0));
 	}
 
 }
