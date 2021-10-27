@@ -34,7 +34,8 @@ class OrderController {
 		// Verwendet das orderRepository um die übergebene Order in die Datenbank zu schreiben.
 		// Beachtet, dass ihr hier ein OrderDTO und auch wieder zurückgeben müsst, das orderRepository
 		// aber eine Order erwartet und zurückgibt.
-		return Mono.empty();
+		return orderRepository.save(orderMapper.toOrder(order))
+				.map(orderMapper::toOrderDTO);
 	}
 	
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -42,7 +43,8 @@ class OrderController {
 		// TODO: implement me
 		// Verwendet das OrderRepository um alle Orders aus der Datenbank auszulesen und als OrderDTO
 		// Objekte zurückzugeben.
-	    return Flux.empty();
+	    return orderRepository.findAll()
+	    		.map(orderMapper::toOrderDTO);
 	}
 	
 	@PostMapping(path = "/{id}/payment", produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -53,7 +55,26 @@ class OrderController {
 		// markAsPayed mit dem Preis aus dem PaymentResult aufruft.
 		// Speichert dann die geänderte Order wieder in der Datenbank und gebt das Ergebnis als OrderDTO zurück.
 		// Am WebClient ist die baseUrl schon korrekt konfiguriert.
-		return Mono.empty();
+		return orderRepository.findById(id)
+				.map(order -> new PaymentRequest(order.id(), order.item()))
+				.flatMap(this::callPaymentService) // flatMap, da man sonst ein Mono<Mono<PaymentResponse>> hat. Das flatMap eliminiert das innere Mono
+				.flatMap(this::markOrderAsPayed)
+				.map(orderMapper::toOrderDTO);
+	}
+	
+	private Mono<Order> markOrderAsPayed(PaymentResponse paymentResponse) {
+		return orderRepository.findById(paymentResponse.orderId())
+				.flatMap(order -> orderRepository.save(order.markAsPayed(paymentResponse.price())));
+	}
+	
+	private Mono<PaymentResponse> callPaymentService(PaymentRequest paymentRequest) {
+		return webClient
+				.post()
+				.uri("/api/payment")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(BodyInserters.fromValue(paymentRequest))
+				.exchangeToMono(clientResponse -> clientResponse.bodyToMono(PaymentResponse.class));
 	}
 
 }
